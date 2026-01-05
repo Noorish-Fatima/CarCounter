@@ -6,9 +6,9 @@ import time
 import math
 from Project.PeopleCounter.sort import *
 
-cap=cv2.VideoCapture("Videos/cars.mp4")
+cap=cv2.VideoCapture("cars.mov")
 
-model=YOLO("./YoloWeights/yolov8n.pt")
+model=YOLO("yolov8n.pt")
 
 classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", "boat",
               "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat",
@@ -22,7 +22,7 @@ classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "trai
               "teddy bear", "hair drier", "toothbrush"
               ]
 
-mask=cv2.imread("Project/CarCounter/CarMask.png")
+mask=cv2.imread("CarMask.png")
 
 # tracking
 tracker=Sort(max_age=20,min_hits=2,iou_threshold=0.3)
@@ -39,27 +39,20 @@ while True:
         boxes=r.boxes
         for box in boxes:
             # OpenCV
-
-            #bounding box
+              #bounding box
             x1,y1,x2,y2=box.xyxy[0]
             x1,y1,x2,y2=int(x1),int(y1),int(x2),int(y2)
             #print(x1,y1,x2,y2)
-            #cv2.rectangle(img,(x1,y1),(x2,y2),(255,0,255),3)
-
             # cvzone
             w,h=x2-x1,y2-y1
             #confidence
             conf=math.ceil((box.conf[0]*100))/100
-            #cvzone.putTextRect(img,f'{conf}',(max(0,x1),max(35,y1)))
 
             #class name
             cls=int(box.cls[0])
             currentClass=classNames[cls]
 
             if currentClass=='car' or currentClass=='truck' or currentClass=='bus' or currentClass=='motorbike' and conf>0.3:
-                #cvzone.putTextRect(img,f'{currentClass} {conf}',(max(0,x1),max(35,y1)),scale=4,thickness=2,offset=3)
-                #cvzone.cornerRect(img,(x1,y1,w,h),l=15,rt=5)
-
                 currentArray=np.array([x1,y1,x2,y2,conf])
                 detections=np.vstack((detections,currentArray))
 
